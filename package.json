@@ -1,0 +1,44 @@
+{
+  "name": "Nitro UI Streamlit",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "vite build && pnpm build-css",
+    "build-css": "npx tailwindcss -o ./nitro.css --minify && mv ./nitro.css ./dist/nitro.css",
+    "build:watch": "nodemon --watch src --ext js,jsx,ts,tsx,json,css,scss,html --exec pnpm build",
+    "dev": "vite --port 3000",
+    "format": "prettier --check \"**/*.{html,js,jsx,ts,tsx,json,css,md}\"",
+    "format:fix": "prettier --write \"**/*.{html,js,jsx,ts,tsx,json,css,md}\"",
+    "format:watch": "nodemon --watch . --ext js,jsx,ts,tsx,json,css,scss,html --exec pnpm format:fix",
+    "lint": "tsc && eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
+  },
+  "dependencies": {
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.10",
+    "daisyui": "^4.6.3",
+    "nodemon": "^3.0.3",
+    "plotly.js": "^2.29.1",
+    "prettier": "^3.2.5",
+    "prettier-plugin-tailwindcss": "^0.5.11",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-plotly.js": "^2.6.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.55",
+    "@types/react-dom": "^18.2.19",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.17",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.2.2",
+    "vite": "^5.1.0"
+  }
+}
