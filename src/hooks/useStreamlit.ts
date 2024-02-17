@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { z, ZodSchema } from "zod";
+import { useEffect, useState } from "react";
+import { ZodSchema } from "zod";
 
 export const useStreamlit = <T extends Record<string, unknown>>({
   ref,
@@ -11,8 +11,6 @@ export const useStreamlit = <T extends Record<string, unknown>>({
   const [data, setData] = useState<T | null>(null);
 
   const sendToStreamlit = (next: T) => {
-    // update(next);
-    console.log(`sending message to streamlit`);
     sendMessageToStreamlitClient("streamlit:componentChanged", next);
   };
 
@@ -25,13 +23,11 @@ export const useStreamlit = <T extends Record<string, unknown>>({
       };
     }) {
       if (event.data.type !== "streamlit:render") {
-        console.debug("Not a value message, ignoring");
         return;
       } else {
-        console.log("[Streamlit] Received message", event.data.args);
+        console.debug("[useStreamlit] Received message", event.data.args);
         const parsed = zodSchema.safeParse(event.data.args);
         if (parsed.success) {
-          console.log(`Setting state to`, parsed);
           setData(parsed.data);
         } else {
           console.error(parsed.error);
@@ -49,7 +45,6 @@ export const useStreamlit = <T extends Record<string, unknown>>({
     function resizeStreamlitFrameDebounced() {
       const timeoutId = setTimeout(function resizeStreamlitFrame() {
         if (ref.current) {
-          console.log(`resizing component`);
           sendMessageToStreamlitClient("streamlit:setFrameHeight", {
             height: ref.current.scrollHeight,
           });
@@ -73,7 +68,7 @@ type StreamlitType =
   | "streamlit:setFrameHeight";
 
 function sendMessageToStreamlitClient(type: StreamlitType, data: unknown) {
-  console.log("[Streamlit]", type, data);
+  console.debug("[useStreamlit]", type, data);
   const outData = Object.assign(
     {
       isStreamlitMessage: true,
@@ -92,11 +87,9 @@ export const useStreamlitMock = <T extends Record<string, unknown>>({
   useEffect(function setupMock() {
     const receiveFromReact = (event: MessageEvent) => {
       if (event.data.type !== "streamlit:componentChanged") {
-        console.debug("Not a componentChanged message, ignoring");
         return;
       } else {
-        console.log(`received message from react`, event.data);
-        console.log(`sending back to react`);
+        console.debug("[useStreamlitMock] received", event.data, "from react");
         const parsed = zodSchema.parse(event.data);
         sendToReact(parsed);
       }
@@ -105,13 +98,13 @@ export const useStreamlitMock = <T extends Record<string, unknown>>({
   }, []);
 
   const sendToReact = (next: T) => {
-    console.log(`sending ${JSON.stringify(next)} to react`);
     const mapped = Object.fromEntries(Object.entries(next));
     window.parent.postMessage({
       isStreamlitMessage: true,
       type: "streamlit:render",
       args: mapped,
     });
+    console.debug("[useStreamlitMock] sent", next, "to react");
   };
 
   return { sendToReact };
